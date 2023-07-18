@@ -14,17 +14,17 @@ void serialBegin(long baudRate, int swap) {
   firstRun = false;
   if (swap == ON || swap == AUTO_ON) swap = 1; else swap = 0;
   #ifdef ESP32
-    // wemos d1 mini esp32
-    // not swapped: TX and RX on default pins
-    //     swapped: TX on gpio 5 and RX on gpio 23
+    // wemos d1 r32 esp32
+    // not swapped: TX on gpio 5 and RX on gpio 13
+    //     swapped: TX on gpio 13 and RX on gpio 5
     if (swap) { 
         VLF("SWS: Attempting connect on swapped port");
         delay(500);
-        SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, 23, 5); 
+        SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, 5, 13);
       } else {
         VLF("SWS: Attempting connect on non-swapped port");
         delay(500);
-        SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, 1, 3);
+        SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, 13, 5);
       }
   #else
     VF("SWS: Set baud rate to "); VL(baudRate);
