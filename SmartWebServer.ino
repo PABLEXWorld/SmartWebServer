@@ -47,6 +47,7 @@ Tasks tasks;
 #include "src/encoders/Encoders.h"
 #include "src/pages/Pages.h"
 #include "src/status/MountStatus.h"
+#include "src/irremote/IRRemoteReceiver.h"
 
 bool connected = false;
 
@@ -213,6 +214,8 @@ Again:
     server.begin();
   #endif
 
+  SetupIR();
+
   // allow time for the background servers to come up
   delay(2000);
 
@@ -234,6 +237,8 @@ Again:
 
 void loop(void) {
   server.handleClient();
+
+  HandleIR();
 
   #if ENCODERS == ON
     encoders.poll();
