@@ -3,7 +3,6 @@
 #define DISABLE_PARITY_CHECKS
 #include "IRRemoteReceiver.h"
 #include <TinyIRReceiver.hpp>
-#include <CircularBuffer.h>
 #include "../commands/Commands.h"
 
 // remote code table
@@ -25,7 +24,7 @@
 #define REMOTE_0 0x19
 #define REMOTE_POUND 0x0D
 
-CircularBuffer<uint8_t,17> ButtonBuffer;
+uint8_t LastIRInput;
 unsigned long MillisOfLastIRInput;
 bool ButtonPressed = false;
 void SetupIR() {
@@ -36,32 +35,45 @@ void HandleIR() {
   if (ButtonPressed && millis() - 200 > MillisOfLastIRInput) {
     // Button released
     ButtonPressed = false;
-    // Clear entire buffer just to be safe
-    while (!ButtonBuffer.isEmpty()) {
-      switch (ButtonBuffer.pop()) {
-        case REMOTE_UP:
-          commandBlind(":Qn#");
-        break;
-        case REMOTE_DOWN:
-          commandBlind(":Qs#");
-        break;
-        case REMOTE_LEFT:
-          commandBlind(":Qw#");
-        break;
-        case REMOTE_RIGHT:
-          commandBlind(":Qe#");
-        break;
-      }
+    switch (LastIRInput) {
+      case REMOTE_UP:
+        commandBlind(":Qn#");
+      break;
+      case REMOTE_DOWN:
+        commandBlind(":Qs#");
+      break;
+      case REMOTE_LEFT:
+        commandBlind(":Qw#");
+      break;
+      case REMOTE_RIGHT:
+        commandBlind(":Qe#");
+      break;
     }
+    LastIRInput = NULL;
   }
 }
 
 void IRAM_ATTR handleReceivedTinyIRData(uint8_t aAddress, uint8_t aCommand, uint8_t aFlags) {
-  ButtonPressed = true;
-  MillisOfLastIRInput = millis();
   // if (aAddress == 0 && aFlags != IRDATA_FLAGS_IS_REPEAT && aFlags != IRDATA_FLAGS_PARITY_FAILED) {
     // Button pressed
-    ButtonBuffer.push(aCommand);
+    ButtonPressed = true;
+    MillisOfLastIRInput = millis();
+    // Only allow one command at the same time
+    switch (LastIRInput) {
+      case REMOTE_UP:
+        commandBlind(":Qn#");
+      break;
+      case REMOTE_DOWN:
+        commandBlind(":Qs#");
+      break;
+      case REMOTE_LEFT:
+        commandBlind(":Qw#");
+      break;
+      case REMOTE_RIGHT:
+        commandBlind(":Qe#");
+      break;
+    }
+    LastIRInput = aCommand;
     switch (aCommand) {
       case REMOTE_UP:
         commandBlind(":Mn#");
