@@ -1,5 +1,6 @@
-#define IR_RECEIVE_PIN    26
-#define NO_LED_FEEDBACK_CODE
+#define IR_RECEIVE_PIN      26
+#define IR_FEEDBACK_LED_PIN 25
+#define DISABLE_PARITY_CHECKS
 #include "IRRemoteReceiver.h"
 #include <TinyIRReceiver.hpp>
 #include <CircularBuffer.h>
@@ -33,8 +34,8 @@ void SetupIR() {
 
 void HandleIR() {
   if (ButtonPressed && millis() - 200 > MillisOfLastIRInput) {
-    ButtonPressed = true;
     // Button released
+    ButtonPressed = false;
     // Clear entire buffer just to be safe
     while (!ButtonBuffer.isEmpty()) {
       switch (ButtonBuffer.pop()) {
@@ -56,10 +57,10 @@ void HandleIR() {
 }
 
 void IRAM_ATTR handleReceivedTinyIRData(uint8_t aAddress, uint8_t aCommand, uint8_t aFlags) {
-  if (aAddress == 0 && aFlags != IRDATA_FLAGS_PARITY_FAILED && aFlags != IRDATA_FLAGS_IS_REPEAT) {
+  ButtonPressed = true;
+  MillisOfLastIRInput = millis();
+  // if (aAddress == 0 && aFlags != IRDATA_FLAGS_IS_REPEAT && aFlags != IRDATA_FLAGS_PARITY_FAILED) {
     // Button pressed
-    ButtonPressed = true;
-    MillisOfLastIRInput = millis();
     ButtonBuffer.push(aCommand);
     switch (aCommand) {
       case REMOTE_UP:
@@ -106,6 +107,6 @@ void IRAM_ATTR handleReceivedTinyIRData(uint8_t aAddress, uint8_t aCommand, uint
       case REMOTE_POUND:
         commandBlind(":hC#");
       break;
-    }
+    // }
   }
 }
