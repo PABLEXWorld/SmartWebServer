@@ -39,7 +39,7 @@
 // NV is wiped, these settings (where applicable) can be changed at runtime however.
 #define AP_ENABLED                   true //        true, Wifi Access Point Enabled.                                          Adjust
 #define AP_SSID                  "OnStep" //    "ONSTEP", Wifi Access Point SSID.                                             Adjust
-#define AP_PASSWORD           "OSampimpa" //  "password", Wifi Access Point password.                                         Adjust
+#define AP_PASSWORD           "Einstein2023" //  "password", Wifi Access Point password.                                         Adjust
 #define AP_CHANNEL                      7 //           7, Wifi Access Point channel.                                          Adjust
 #define AP_IP_ADDR          (192,168,0,1) // ..,168,0,1), Wifi Access Point IP Address.                                       Adjust
 #define AP_GW_ADDR          (192,168,0,1) // ..,168,0,1), Wifi Access Point GATEWAY Address.                                  Adjust
